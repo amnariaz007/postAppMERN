@@ -1,15 +1,18 @@
 const PostSchema = new mongoose.Schema({
-    content: {
-        type: String,
-        required: true
-    },
     user: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'user', // Reference to User model
+        ref: 'user', 
         required: true
     },
-    likes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'user' }], // Users who liked the post
-    comments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'comment' }] // Comments on the post
+    postType:{
+        type: String,
+        enum: ["text", "file"],
+        required : true
+    },
+    content: { type: String, required: function() { return this.messageType !== 'file'; } },
+    fileUrl: { type: String, required: function() { return this.messageType === 'file'; } },
+    likes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'user' }], 
+    comments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'comment' }] 
 }, {
     timestamps: true
 });
