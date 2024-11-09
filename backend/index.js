@@ -6,6 +6,7 @@ require('dotenv').config();
 const cors = require('cors');
 const cookieparser = require('cookie-parser');
 const { default: mongoose } = require('mongoose');
+const authRoutes = require('./Routes/authRoutes')
 
 
 
