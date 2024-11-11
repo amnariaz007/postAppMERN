@@ -75,5 +75,44 @@ module.exports.deletePost = async(req,res) =>{
     }
 }
 
+module.exports.getUserPosts = async(req,res) =>{
+    try {
+        const { id } = req.body;
+        
+        // Find and delete the task
+        const post = await postModel.find(id);
+        if (!post) {
+            return res.status(404).json({ message: "post not found" });
+        }
+        
+        res.status(200).json({ message: "all posts" , post});
+    } catch (err) {
+        console.error(err); 
+        res.status(500).json({ message: "Internal server error" });
+    }
+}
+
+module.exports.getAllPosts = async (req, res) => {
+    try {
+        // Find all posts and populate user and comments fields if needed
+        const posts = await postModel.find()
+            .populate("user", "fullname email") // Populate user with selected fields
+            .populate({
+                path: 'comments',
+                populate: {
+                    path: 'user', // Populate user details within each comment
+                    select: 'fullname email' // Select specific fields from user
+                }
+            })
+            .sort({ createdAt: -1 }); // Sort by latest posts first
+
+        res.status(200).json({ message: "Posts retrieved successfully", posts });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+
 
 
