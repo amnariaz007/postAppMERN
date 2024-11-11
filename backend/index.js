@@ -6,23 +6,23 @@ require('dotenv').config();
 const cors = require('cors');
 const cookieparser = require('cookie-parser');
 const { default: mongoose } = require('mongoose');
-const authRoutes = require('./Routes/authRoutes')
+const authRoutes = require('./Routes/authRoutes');
+const postRoutes = require('./Routes/postRoutes');
+const commentRoutes = require('./Routes/commentRoutes');
 
 
 
-// // Ensure that the uploads directories exist
-// const directories = [
-//   "uploads/profiles",
-//   "uploads/files",
-//   "uploads/voiceNotes"
-// ];
+// Ensure that the uploads directories exist
+const directories = [
+  "uploads/posts",
+];
 
-// directories.forEach(dir => {
-//   const dirPath = path.join(__dirname, dir);
-//   if (!fs.existsSync(dirPath)) {
-//     fs.mkdirSync(dirPath, { recursive: true });
-//   }
-// });
+directories.forEach(dir => {
+  const dirPath = path.join(__dirname, dir);
+  if (!fs.existsSync(dirPath)) {
+    fs.mkdirSync(dirPath, { recursive: true });
+  }
+});
 
 // Middlewares
 app.use(cors({
@@ -31,9 +31,8 @@ app.use(cors({
   credentials: true
 }));
 
-// app.use("/uploads/profiles", express.static("uploads/profiles"));
-// app.use("/uploads/files", express.static("uploads/files"));
-// app.use("/uploads/voiceNotes", express.static("uploads/voiceNotes"));
+app.use("/uploads/posts", express.static("uploads/posts"));
+
 app.use(express.json());
 app.use(cookieparser());
 
@@ -42,6 +41,8 @@ const db = process.env.MOONGODB_URI;
 
 // API Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/post', postRoutes);
+app.use('/api/comment', commentRoutes);
 
 
 const server = app.listen(port, () => {
