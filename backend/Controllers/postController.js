@@ -104,7 +104,7 @@ module.exports.getAllPosts = async (req, res) => {
                     select: 'fullname email' // Select specific fields from user
                 }
             })
-            .sort({ createdAt: -1 }); // Sort by latest posts first
+            .sort({ createdAt: -1 }); 
 
         res.status(200).json({ message: "Posts retrieved successfully", posts });
     } catch (err) {
