@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState , useEffect} from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import {apiClient} from '../lib/api-client'
 import { useAppStore } from '../store';
@@ -29,14 +29,33 @@ const Login = () => {
 
   const HandleLogin = async () => {
     if (validatelogin()) {
-      const response = await apiClient.post(LOGIN_ROUTE, { email, password })
-      console.log({ response });
-      if (response.data) {
-        setuserInfo(response.data)
-        navigate('/')
-      }
+        const response = await apiClient.post(LOGIN_ROUTE, { email, password });
+        console.log("Full response:", response); // Check the full response
+        
+        // Check if the response includes `id` and `token`
+        if (response.data && response.data.id && response.data.token) {
+            // Set the entire response.data as userInfo
+            setuserInfo(response.data);
+            setTimeout(() => {
+                console.log("Updated userInfo after login:", useAppStore.getState().userInfo);
+                navigate('/');
+            }, 100); // Optional delay
+        } else {
+            console.error("Login failed or unexpected response structure:", response.data);
+        }
     }
-  }
+};
+
+
+
+
+  useEffect(() => {
+    console.log("Current userInfo:", userInfo); // Check userInfo on each change
+  }, [userInfo]);
+
+
+  
+
 
   return (
     <>

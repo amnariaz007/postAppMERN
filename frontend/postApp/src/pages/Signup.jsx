@@ -43,6 +43,10 @@ const Signup = () => {
         }
       }
 
+      useEffect(() => {
+        console.log("Current userInfo:", userInfo); // Check userInfo on each change
+      }, [userInfo]);
+
 
  
 

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const {registerUser, loginUser, logout} = require('../Controllers/authController')
+const {registerUser, loginUser, logout, userInfo} = require('../Controllers/authController');
+const isLoggedin = require('../Middlewares/isLoggedin')
 const authRoutes = router 
 
 
@@ -10,6 +11,8 @@ authRoutes.get('/', async (req, res) => {
 authRoutes.post('/register', registerUser )
 
 authRoutes.post('/login', loginUser )
+
+authRoutes.get("/userInfo", isLoggedin ,userInfo);
 
 authRoutes.get("/logout", logout);
 

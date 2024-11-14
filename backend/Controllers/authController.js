@@ -73,6 +73,23 @@ module.exports.loginUser = async ( req,res) => {
     }
 }
 
+module.exports.userInfo = async (req, res) => {
+  try {
+    const user = req.user;
+    console.log(user, "user")
+
+    return res.status(200).json({
+
+      id: user._id,
+      email: user.email,
+      fullname: user.fullname,
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).send(err.message);
+  }
+};
+
 module.exports.logout = function (req, res) {
     res.cookie("token", "");
     console.log('Redirecting to logout');
