@@ -3,49 +3,42 @@ import { MdOutlineFavorite, MdDelete, MdAddCircle } from "react-icons/md";
 import { FaEdit } from "react-icons/fa";
 import { CiHeart } from "react-icons/ci";
 import { apiClient } from '../lib/api-client';
-import { CREATE_POST, USER_INFO } from '../utils/constants'
+import { CREATE_POST, USER_INFO, GET_USER_POST } from '../utils/constants'; // Ensure GET_USER_POSTS is defined in constants
 import { useAppStore } from '../store';
 
-
 const Home = () => {
-
   const { userInfo, setuserInfo } = useAppStore();
-  console.log(userInfo);
   const token = localStorage.getItem('token');
-  console.log('Token:', token);
+
   const [isAddPostOpen, setIsAddPostOpen] = useState(false);
   const [postContent, setPostContent] = useState('');
-  const [posttype, setposttype] = useState(null);
+  const [postImage, setPostImage] = useState(null);
+  const [posts, setPosts] = useState([]); // State to store fetched posts
 
   const handleAddPostToggle = () => {
     setIsAddPostOpen(!isAddPostOpen);
   };
 
   const handleImageUpload = (e) => {
-    setposttype(e.target.files[0]);
+    setPostImage(e.target.files[0]);
   };
 
   const handleSubmitPost = async () => {
-
-
     try {
       const postData = {
         id: userInfo.id, 
-        postType: posttype ,
-        content: posttype === 'text' ? content : undefined,
-        fileUrl: posttype === 'file' ? `uploads/posts/${req.file.filename}` : undefined,
+        postType: postImage ? 'file' : 'text',
+        content: postContent,
       };
 
       let response;
 
-      if (posttype) {
-    
+      if (postImage) {
         const formData = new FormData();
         formData.append('id', postData.id);  
         formData.append('postType', postData.postType);
         formData.append('content', postData.content);
-       
-
+        formData.append('file', postImage);
 
         response = await apiClient.post(CREATE_POST, formData, {
           headers: {
@@ -55,7 +48,6 @@ const Home = () => {
           withCredentials: true,  
         });
       } else {
-        // For text-only posts, send JSON
         response = await apiClient.post(CREATE_POST, postData, {
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -64,17 +56,29 @@ const Home = () => {
         });
       }
 
-      console.log(response.data);
       setIsAddPostOpen(false);
       setPostContent('');
-      setposttype(null)
-   
+      setPostImage(null);
+      fetchPosts(); // Fetch updated posts after adding a new post
 
     } catch (err) {
-      console.log(err.message)
+      console.log(err.message);
     }
-
   };
+
+  const fetchPosts = async () => {
+    try {
+        const response = await apiClient.get(`${GET_USER_POST}/${userInfo.id}`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+            },
+        });
+        setPosts(response.data.posts);
+    } catch (err) {
+        console.error('Error fetching posts:', err);
+    }
+};
+
 
   useEffect(() => {
     if (!userInfo && token) {
@@ -85,47 +89,55 @@ const Home = () => {
               Authorization: `Bearer ${token}`,
             },
           });
-          setuserInfo(response.data);  // Update store with user info
+          setuserInfo(response.data); 
         } catch (err) {
           console.error('Error fetching user info:', err);
         }
       };
       fetchUserInfo();
     }
+    fetchPosts(); // Fetch posts on component mount
   }, [userInfo, token, setuserInfo]);
-
-
 
   return (
     <div className='grid grid-cols-3 gap-4 p-4'>
-      {/* Existing post cards */}
-      <div className='flex flex-col justify-between bg-gray-600 rounded-sm p-4'>
-        <div>
-          <h3 className='text-xl font-semibold'>Post Title</h3>
-          <p className='text-gray-300 my-2'>Description</p>
-        </div>
-        <div className='mt-4 w-full flex items-center'>
-          <div className='text-white p-2 w-3/6 text-xl font-semibold flex justify-around'>
-            <button onClick={() => handleImportant()}>
-              <CiHeart />
-            </button>
-            <button onClick={() => handleUpdate()}>
-              <FaEdit />
-            </button>
-            <button onClick={() => handleDelete()}>
-              <MdDelete />
-            </button>
+      {/* Display each post */}
+      {posts && posts.length > 0 ? (
+        posts.map((post) => (
+          <div key={post.id} className='flex flex-col justify-between bg-gray-600 rounded-sm p-4'>
+            <div>
+             
+              <p className='text-gray-300 my-2'>{post.content}</p>
+              {post.postType === 'file' && post.fileUrl && (
+                <img src={post.fileUrl} alt="Post Image" className='w-full h-auto rounded' />
+              )}
+            </div>
+            <div className='mt-4 w-full flex items-center'>
+              <div className='text-white p-2 w-3/6 text-xl font-semibold flex justify-around'>
+                {/* <button onClick={() => handleImportant(post.id)}>
+                  <CiHeart />
+                </button>
+                <button onClick={() => handleUpdate(post.id)}>
+                  <FaEdit />
+                </button>
+                <button onClick={() => handleDelete(post.id)}>
+                  <MdDelete />
+                </button> */}
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
-
+        ))
+      ) : (
+        <p className="text-center text-gray-500">No posts available</p>
+      )}
+  
       {/* Add Post Card */}
       <button onClick={handleAddPostToggle} className='flex flex-col justify-center items-center bg-gray-600 rounded-sm p-4'>
         <h2 className='text-2xl'>Add Post</h2>
         <MdAddCircle className='text-5xl' />
       </button>
-
-      {/* Add Post Form (Visible when isAddPostOpen is true) */}
+  
+      {/* Add Post Form */}
       {isAddPostOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-6 rounded-lg w-1/3">
@@ -154,6 +166,7 @@ const Home = () => {
       )}
     </div>
   );
+  
 };
 
 export default Home;

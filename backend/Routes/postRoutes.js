@@ -8,7 +8,7 @@ const upload = require ('../config/multer-config')
 postRoutes.post('/createPost',isLoggedin, upload.single('file') , createPost )
 postRoutes.post('/likePost',isLoggedin , likePost )
 postRoutes.post('/deletePost',isLoggedin , deletePost )
-postRoutes.get('/getUserPosts',isLoggedin , getUserPosts )
+postRoutes.get('/getUserPosts/:id',isLoggedin , getUserPosts )
 postRoutes.get('/getAllPosts',isLoggedin , getAllPosts )
 
 
