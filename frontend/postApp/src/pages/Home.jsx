@@ -3,7 +3,7 @@ import { MdOutlineFavorite, MdDelete, MdAddCircle } from "react-icons/md";
 import { FaEdit } from "react-icons/fa";
 import { CiHeart } from "react-icons/ci";
 import { apiClient } from '../lib/api-client';
-import { CREATE_POST, USER_INFO, GET_USER_POST } from '../utils/constants';
+import { CREATE_POST, USER_INFO, GET_USER_POST,LIKE_POST } from '../utils/constants';
 import { useAppStore } from '../store';
 
 const Home = () => {
@@ -13,7 +13,7 @@ const Home = () => {
   const [isAddPostOpen, setIsAddPostOpen] = useState(false);
   const [postContent, setPostContent] = useState('');
   const [postImage, setPostImage] = useState(null);
-  const [posts, setPosts] = useState([]); 
+  const [posts, setPosts] = useState([]);
 
   const handleAddPostToggle = () => {
     setIsAddPostOpen(!isAddPostOpen);
@@ -59,7 +59,7 @@ const Home = () => {
       setIsAddPostOpen(false);
       setPostContent('');
       setPostImage(null);
-      setPosts([response.data.post, ...posts]); // Prepend new post
+      setPosts([response.data.post, ...posts]);
     } catch (err) {
       console.log(err.message);
     }
@@ -67,7 +67,7 @@ const Home = () => {
 
   useEffect(() => {
     const fetchPosts = async () => {
-      if (!userInfo) return; 
+      if (!userInfo) return;
       try {
         const response = await apiClient.get(`${GET_USER_POST}/${userInfo.id}`, {
           headers: { Authorization: `Bearer ${token}` },
@@ -99,6 +99,29 @@ const Home = () => {
     }
   }, [userInfo, token, setuserInfo]);
 
+  const handleLikePost = async (id) => {
+    console.log("Post ID being sent:", id); // Debug log
+
+    try {
+        const response = await apiClient.post( LIKE_POST , { id: id }, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        console.log("Like response:", response.data);
+        setPosts((prevPosts) =>
+          prevPosts.map((post) =>
+              post._id === id
+                  ? { ...post, likes: response.data.post.likes } // Update likes array
+                  : post
+          )
+      );
+    } catch (error) {
+        console.error("Error liking post:", error.response?.data || error.message);
+    }
+};
+
+
   return (
     <div className="p-4 space-y-4">
       {/* Add Post Card */}
@@ -118,19 +141,27 @@ const Home = () => {
                   <img src={post.fileUrl} alt="Post Image" className="w-full h-auto rounded" />
                 )}
               </div>
-              <div className='mt-4 w-full flex items-center'>
-              <div className='text-white p-2 w-3/6 text-xl font-semibold flex justify-around'>
-                <button onClick={() => handleImportant(post.id)}>
-                  <CiHeart />
-                </button>
-                <button onClick={() => handleUpdate(post.id)}>
-                  <FaEdit />
-                </button>
-                <button onClick={() => handleDelete(post.id)}>
-                  <MdDelete />
-                </button>
+              <div className="mt-4 w-full flex items-center">
+                <div className="text-white p-2 w-3/6 text-xl font-semibold flex justify-around">
+                <div>
+  
+    <button onClick={() => handleLikePost(post._id)}>
+        {post.likes.includes(userInfo.id) ? (
+            <MdOutlineFavorite style={{ color: "white" }} />
+        ) : (
+            <CiHeart />
+        )}
+    </button>
+</div>
+                  <button onClick={() => handleUpdate(post.id)}>
+                    <FaEdit />
+                  </button>
+                  <button onClick={() => handleDelete(post.id)}>
+                    <MdDelete />
+                  </button>
+                </div>
+                <p className="text-sm text-gray-400">{post.likes.length} likes</p>
               </div>
-            </div>
             </div>
           ))
         ) : (
@@ -168,5 +199,7 @@ const Home = () => {
     </div>
   );
 };
+
+
 
 export default Home;

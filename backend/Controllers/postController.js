@@ -30,31 +30,67 @@ module.exports.createPost = async (req, res) => {
 };
 
 
+// module.exports.likePost = async (req, res) => {
+//     try {
+//         const { id } = req.body;
+//         const userId = req.user._id 
+//         console.log(userId, "user ID");
+
+//         let post = await postModel.findById(id).populate("user");
+//         let resMessage;
+
+//         if (post.likes.indexOf(userId) === -1) {
+//             post.likes.push(userId);
+//             resMessage = 'Post liked successfully';
+//         } else {
+//             post.likes.splice(post.likes.indexOf(userId), 1)
+//             resMessage = 'Post unliked successfully';
+//         }
+//         await post.save();
+
+//         // Return the response with the updated post
+//         res.status(200).json({ message: resMessage, post });
+//     } catch (err) {
+//         console.error(err.message);
+//         res.status(500).json({ message: 'Server error' });
+//     }
+// }
+
 module.exports.likePost = async (req, res) => {
     try {
         const { id } = req.body;
-        const userId = req.user._id 
-        console.log(userId, "user ID");
+        const userId = req.user._id; 
+
+        if (!id) {
+            return res.status(400).json({ message: "Post ID is required" });
+        }
+
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ message: "Invalid Post ID" });
+        }
 
         let post = await postModel.findById(id).populate("user");
-        let resMessage;
+        if (!post) {
+            return res.status(404).json({ message: "Post not found" });
+        }
 
+        let resMessage;
         if (post.likes.indexOf(userId) === -1) {
             post.likes.push(userId);
-            resMessage = 'Post liked successfully';
+            resMessage = "Post liked successfully";
         } else {
-            post.likes.splice(post.likes.indexOf(userId), 1)
-            resMessage = 'Post unliked successfully';
+            post.likes.splice(post.likes.indexOf(userId), 1);
+            resMessage = "Post unliked successfully";
         }
         await post.save();
 
-        // Return the response with the updated post
         res.status(200).json({ message: resMessage, post });
     } catch (err) {
-        console.error(err.message);
-        res.status(500).json({ message: 'Server error' });
+        console.error("Error liking post:", err.message);
+        res.status(500).json({ message: "Server error" });
     }
-}
+};
+
 
 module.exports.deletePost = async(req,res) =>{
     try {
@@ -76,28 +112,6 @@ module.exports.deletePost = async(req,res) =>{
 }
 
 
-// module.exports.getUserPosts = async (req, res) => {
-//     try {
-//         const { id } = req.params; // Extract user ID from URL params
-//         console.log(id, "id")
-        
-//         // Fetch posts associated with the user ID
-//         const posts = await postModel.find({ userId: id });
-        
-//         if (!posts || posts.length === 0) {
-//             return res.status(404).json({ message: "No posts found for this user" });
-//         }
-        
-//         res.status(200).json({ message: "All posts", posts });
-//     } catch (err) {
-//         console.error(err); 
-//         res.status(500).json({ message: "Internal server error" });
-//     }
-// };
-
-
-
-
 module.exports.getUserPosts = async (req, res) => {
     try {
         let { id } = req.params; // Extract user ID from URL params
@@ -110,7 +124,7 @@ module.exports.getUserPosts = async (req, res) => {
         const objectId = new mongoose.Types.ObjectId(id) ;
 
         // Fetch posts using the correct `user` field
-        const posts = await postModel.find({ user: { $in: [id, objectId] } });
+        const posts = await postModel.find({ user: { $in: [id, objectId] } }).populate('user', 'fullname');;
 
         console.log("Query result:", posts);
 
