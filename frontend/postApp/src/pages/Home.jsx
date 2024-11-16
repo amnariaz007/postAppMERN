@@ -3,7 +3,7 @@ import { MdOutlineFavorite, MdDelete, MdAddCircle } from "react-icons/md";
 import { FaEdit } from "react-icons/fa";
 import { CiHeart } from "react-icons/ci";
 import { apiClient } from '../lib/api-client';
-import { CREATE_POST, USER_INFO, GET_USER_POST } from '../utils/constants'; // Ensure GET_USER_POSTS is defined in constants
+import { CREATE_POST, USER_INFO, GET_USER_POST } from '../utils/constants';
 import { useAppStore } from '../store';
 
 const Home = () => {
@@ -13,7 +13,7 @@ const Home = () => {
   const [isAddPostOpen, setIsAddPostOpen] = useState(false);
   const [postContent, setPostContent] = useState('');
   const [postImage, setPostImage] = useState(null);
-  const [posts, setPosts] = useState([]); // State to store fetched posts
+  const [posts, setPosts] = useState([]); 
 
   const handleAddPostToggle = () => {
     setIsAddPostOpen(!isAddPostOpen);
@@ -26,7 +26,7 @@ const Home = () => {
   const handleSubmitPost = async () => {
     try {
       const postData = {
-        id: userInfo.id, 
+        id: userInfo.id,
         postType: postImage ? 'file' : 'text',
         content: postContent,
       };
@@ -35,7 +35,7 @@ const Home = () => {
 
       if (postImage) {
         const formData = new FormData();
-        formData.append('id', postData.id);  
+        formData.append('id', postData.id);
         formData.append('postType', postData.postType);
         formData.append('content', postData.content);
         formData.append('file', postImage);
@@ -45,7 +45,7 @@ const Home = () => {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'multipart/form-data',
           },
-          withCredentials: true,  
+          withCredentials: true,
         });
       } else {
         response = await apiClient.post(CREATE_POST, postData, {
@@ -59,26 +59,27 @@ const Home = () => {
       setIsAddPostOpen(false);
       setPostContent('');
       setPostImage(null);
-      fetchPosts(); // Fetch updated posts after adding a new post
-
+      setPosts([response.data.post, ...posts]); // Prepend new post
     } catch (err) {
       console.log(err.message);
     }
   };
 
-  const fetchPosts = async () => {
-    try {
+  useEffect(() => {
+    const fetchPosts = async () => {
+      if (!userInfo) return; 
+      try {
         const response = await apiClient.get(`${GET_USER_POST}/${userInfo.id}`, {
-            headers: {
-                'Authorization': `Bearer ${token}`,
-            },
+          headers: { Authorization: `Bearer ${token}` },
         });
         setPosts(response.data.posts);
-    } catch (err) {
-        console.error('Error fetching posts:', err);
-    }
-};
+      } catch (err) {
+        console.error('Error fetching posts:', err.response?.data?.message || err.message);
+      }
+    };
 
+    fetchPosts();
+  }, [userInfo, token]);
 
   useEffect(() => {
     if (!userInfo && token) {
@@ -89,32 +90,37 @@ const Home = () => {
               Authorization: `Bearer ${token}`,
             },
           });
-          setuserInfo(response.data); 
+          setuserInfo(response.data);
         } catch (err) {
           console.error('Error fetching user info:', err);
         }
       };
       fetchUserInfo();
     }
-    fetchPosts(); // Fetch posts on component mount
   }, [userInfo, token, setuserInfo]);
 
   return (
-    <div className='grid grid-cols-3 gap-4 p-4'>
-      {/* Display each post */}
-      {posts && posts.length > 0 ? (
-        posts.map((post) => (
-          <div key={post.id} className='flex flex-col justify-between bg-gray-600 rounded-sm p-4'>
-            <div>
-             
-              <p className='text-gray-300 my-2'>{post.content}</p>
-              {post.postType === 'file' && post.fileUrl && (
-                <img src={post.fileUrl} alt="Post Image" className='w-full h-auto rounded' />
-              )}
-            </div>
-            <div className='mt-4 w-full flex items-center'>
+    <div className="p-4 space-y-4">
+      {/* Add Post Card */}
+      <div onClick={handleAddPostToggle} className="flex flex-col justify-center items-center bg-gray-600 rounded-sm p-4 cursor-pointer">
+        <h2 className="text-2xl">Add Post</h2>
+        <MdAddCircle className="text-5xl" />
+      </div>
+
+      {/* Display Posts */}
+      <div className="grid grid-cols-3 gap-4">
+        {posts && posts.length > 0 ? (
+          posts.map((post) => (
+            <div key={post.id} className="flex flex-col justify-between bg-gray-600 rounded-sm p-4">
+              <div>
+                <p className="text-gray-300 my-2">{post.content}</p>
+                {post.postType === 'file' && post.fileUrl && (
+                  <img src={post.fileUrl} alt="Post Image" className="w-full h-auto rounded" />
+                )}
+              </div>
+              <div className='mt-4 w-full flex items-center'>
               <div className='text-white p-2 w-3/6 text-xl font-semibold flex justify-around'>
-                {/* <button onClick={() => handleImportant(post.id)}>
+                <button onClick={() => handleImportant(post.id)}>
                   <CiHeart />
                 </button>
                 <button onClick={() => handleUpdate(post.id)}>
@@ -122,21 +128,16 @@ const Home = () => {
                 </button>
                 <button onClick={() => handleDelete(post.id)}>
                   <MdDelete />
-                </button> */}
+                </button>
               </div>
             </div>
-          </div>
-        ))
-      ) : (
-        <p className="text-center text-gray-500">No posts available</p>
-      )}
-  
-      {/* Add Post Card */}
-      <button onClick={handleAddPostToggle} className='flex flex-col justify-center items-center bg-gray-600 rounded-sm p-4'>
-        <h2 className='text-2xl'>Add Post</h2>
-        <MdAddCircle className='text-5xl' />
-      </button>
-  
+            </div>
+          ))
+        ) : (
+          <p className="text-center text-gray-500">No posts available</p>
+        )}
+      </div>
+
       {/* Add Post Form */}
       {isAddPostOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
@@ -166,7 +167,6 @@ const Home = () => {
       )}
     </div>
   );
-  
 };
 
 export default Home;

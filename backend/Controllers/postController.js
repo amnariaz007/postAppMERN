@@ -75,40 +75,59 @@ module.exports.deletePost = async(req,res) =>{
     }
 }
 
-// module.exports.getUserPosts = async(req,res) =>{
+
+// module.exports.getUserPosts = async (req, res) => {
 //     try {
-//         const { id } = req.body;
+//         const { id } = req.params; // Extract user ID from URL params
+//         console.log(id, "id")
         
-//         // Find and delete the task
-//         const post = await postModel.find(id);
-//         if (!post) {
-//             return res.status(404).json({ message: "post not found" });
+//         // Fetch posts associated with the user ID
+//         const posts = await postModel.find({ userId: id });
+        
+//         if (!posts || posts.length === 0) {
+//             return res.status(404).json({ message: "No posts found for this user" });
 //         }
         
-//         res.status(200).json({ message: "all posts" , post});
+//         res.status(200).json({ message: "All posts", posts });
 //     } catch (err) {
 //         console.error(err); 
 //         res.status(500).json({ message: "Internal server error" });
 //     }
-// }
+// };
+
+
+
 
 module.exports.getUserPosts = async (req, res) => {
     try {
-        const { id } = req.params; // Extract user ID from URL params
-        
-        // Fetch posts associated with the user ID
-        const posts = await postModel.find({ userId: id });
-        
+        let { id } = req.params; // Extract user ID from URL params
+        console.log("User ID from params:", id);
+
+        // Remove colon if present in the `id`
+        id = id.startsWith(":") ? id.slice(1) : id;
+
+        // Validate and convert `id` to ObjectId if possible
+        const objectId = new mongoose.Types.ObjectId(id) ;
+
+        // Fetch posts using the correct `user` field
+        const posts = await postModel.find({ user: { $in: [id, objectId] } });
+
+        console.log("Query result:", posts);
+
         if (!posts || posts.length === 0) {
             return res.status(404).json({ message: "No posts found for this user" });
         }
-        
+
         res.status(200).json({ message: "All posts", posts });
     } catch (err) {
-        console.error(err); 
+        console.error("Error fetching posts:", err);
         res.status(500).json({ message: "Internal server error" });
     }
 };
+
+
+
+
 
 
 module.exports.getAllPosts = async (req, res) => {
