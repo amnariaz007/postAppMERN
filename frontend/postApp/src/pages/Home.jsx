@@ -5,10 +5,13 @@ import { CiHeart } from "react-icons/ci";
 import { apiClient } from '../lib/api-client';
 import { CREATE_POST, USER_INFO, GET_USER_POST,LIKE_POST } from '../utils/constants';
 import { useAppStore } from '../store';
+import Sidebar from '../components/Sidebar';
 
 const Home = () => {
   const { userInfo, setuserInfo } = useAppStore();
   const token = localStorage.getItem('token');
+ 
+  console.log("Token:", token);
 
   const [isAddPostOpen, setIsAddPostOpen] = useState(false);
   const [postContent, setPostContent] = useState('');
@@ -65,21 +68,8 @@ const Home = () => {
     }
   };
 
-  useEffect(() => {
-    const fetchPosts = async () => {
-      if (!userInfo) return;
-      try {
-        const response = await apiClient.get(`${GET_USER_POST}/${userInfo.id}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setPosts(response.data.posts);
-      } catch (err) {
-        console.error('Error fetching posts:', err.response?.data?.message || err.message);
-      }
-    };
-
-    fetchPosts();
-  }, [userInfo, token]);
+ 
+  
 
   useEffect(() => {
     if (!userInfo && token) {
@@ -98,6 +88,33 @@ const Home = () => {
       fetchUserInfo();
     }
   }, [userInfo, token, setuserInfo]);
+
+
+  useEffect(() => {
+    const fetchPosts = async () => {
+      if (!userInfo) return;
+      try {
+        const response = await apiClient.get(`${GET_USER_POST}/${userInfo.id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setPosts(response.data.posts);
+      } catch (err) {
+        console.error('Error fetching posts:', err.response?.data?.message || err.message);
+      }
+    };
+
+    fetchPosts();
+  }, [userInfo, token]);
+  
+
+
+
+
+
+
+
+
+  
 
   const handleLikePost = async (id) => {
     console.log("Post ID being sent:", id); // Debug log
@@ -123,7 +140,11 @@ const Home = () => {
 
 
   return (
-    <div className="p-4 space-y-4">
+    <div className='flex min-h-screen'>
+        <Sidebar/>
+  
+    <div className="flex-grow p-4 space-y-4">
+    
       {/* Add Post Card */}
       <div onClick={handleAddPostToggle} className="flex flex-col justify-center items-center bg-gray-600 rounded-sm p-4 cursor-pointer">
         <h2 className="text-2xl">Add Post</h2>
@@ -196,6 +217,7 @@ const Home = () => {
           </div>
         </div>
       )}
+    </div>
     </div>
   );
 };

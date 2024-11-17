@@ -26,26 +26,28 @@ const Login = () => {
     }
     return true;
   }
-
   const HandleLogin = async () => {
     if (validatelogin()) {
-        const response = await apiClient.post(LOGIN_ROUTE, { email, password });
-        console.log("Full response:", response); // Check the full response
-        
-        // Check if the response includes `id` and `token`
-        if (response.data && response.data.id && response.data.token) {
-            // Set the entire response.data as userInfo
-            setuserInfo(response.data);
-            setTimeout(() => {
-                console.log("Updated userInfo after login:", useAppStore.getState().userInfo);
-                navigate('/');
-            }, 100); // Optional delay
-        } else {
-            console.error("Login failed or unexpected response structure:", response.data);
-        }
+      const response = await apiClient.post(LOGIN_ROUTE, { email, password });
+      console.log("Full response:", response); // Check the full response
+  
+      // Check if the response includes `id` and `token`
+      if (response.data && response.data.id && response.data.token) {
+        // Store the token in localStorage
+        localStorage.setItem('token', response.data.token);
+  
+        // Set the entire response.data as userInfo
+        setuserInfo(response.data);
+        setTimeout(() => {
+          console.log("Updated userInfo after login:", useAppStore.getState().userInfo);
+          navigate('/');
+        }, 100); // Optional delay
+      } else {
+        console.error("Login failed or unexpected response structure:", response.data);
+      }
     }
-};
-
+  };
+  
 
 
 

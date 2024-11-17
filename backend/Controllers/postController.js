@@ -30,31 +30,7 @@ module.exports.createPost = async (req, res) => {
 };
 
 
-// module.exports.likePost = async (req, res) => {
-//     try {
-//         const { id } = req.body;
-//         const userId = req.user._id 
-//         console.log(userId, "user ID");
 
-//         let post = await postModel.findById(id).populate("user");
-//         let resMessage;
-
-//         if (post.likes.indexOf(userId) === -1) {
-//             post.likes.push(userId);
-//             resMessage = 'Post liked successfully';
-//         } else {
-//             post.likes.splice(post.likes.indexOf(userId), 1)
-//             resMessage = 'Post unliked successfully';
-//         }
-//         await post.save();
-
-//         // Return the response with the updated post
-//         res.status(200).json({ message: resMessage, post });
-//     } catch (err) {
-//         console.error(err.message);
-//         res.status(500).json({ message: 'Server error' });
-//     }
-// }
 
 module.exports.likePost = async (req, res) => {
     try {

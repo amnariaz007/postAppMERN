@@ -93,5 +93,5 @@ module.exports.userInfo = async (req, res) => {
 module.exports.logout = function (req, res) {
     res.cookie("token", "");
     console.log('Redirecting to logout');
-    res.redirect("/");
+    res.send("/");
   };
