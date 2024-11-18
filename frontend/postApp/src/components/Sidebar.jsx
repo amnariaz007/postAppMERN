@@ -29,18 +29,7 @@ const Sidebar = () => {
         <hr />
       </div>
       <div className="my-2 flex-grow">
-        <Link
-          to="/"
-          className="flex items-center gap-2 p-2 hover:bg-slate-500 transition-all rounded"
-        >
-          Home
-        </Link>
-        <Link
-          to="/tasks"
-          className="flex items-center gap-2 p-2 hover:bg-slate-500 transition-all rounded"
-        >
-          Tasks
-        </Link>
+       
       </div>
       <div className="my-2">
         <button

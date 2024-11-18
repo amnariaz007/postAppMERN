@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { apiClient } from '../lib/api-client'; 
-import { GET_ALL_POST } from '../utils/constants';
+import { GET_ALL_POST, LIKE_POST  } from '../utils/constants';
 import PostCard from '../components/PostCard'
 
 const AllPosts = () => {
   const [posts, setPosts] = useState([]);
+  const token = localStorage.getItem('token');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [userInfo, setUserInfo] = useState({}); // Assuming you have a way to set this (maybe from context or local storage)
@@ -31,19 +32,25 @@ const AllPosts = () => {
     fetchPosts();
   }, []);
 
-  const handleLikePost = async (postId) => {
+
+
+  const handleLikePost = async (id) => {
     try {
-      const token = localStorage.getItem('token');
-      await apiClient.post(`/like/${postId}`, {}, {
+      const response = await apiClient.post(LIKE_POST, { id }, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      
-      // After liking a post, fetch the updated posts to reflect changes
-      fetchPosts();
+
+      setPosts((prevPosts) =>
+        prevPosts.map((post) =>
+          post._id === id
+            ? { ...post, likes: response.data.post.likes }
+            : post
+        )
+      );
     } catch (err) {
-      console.error('Error liking post:', err);
+      console.error('Error liking post:', err.message);
     }
   };
 
