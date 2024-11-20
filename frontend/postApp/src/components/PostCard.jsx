@@ -3,7 +3,7 @@ import { MdOutlineFavorite, MdDelete } from "react-icons/md";
 import { FaEdit } from "react-icons/fa";
 import { CiHeart } from "react-icons/ci";
 
-const PostCard = ({ post, userInfo, handleLikePost, handleUpdatePost, handleDeletePost }) => {
+const PostCard = ({ post, userInfo, handleLikePost, handleComment, handleDeletePost }) => {
   const isLiked = post.likes.includes(userInfo.id);  // Check if the logged-in user has liked the post
   
   return (
@@ -33,7 +33,7 @@ const PostCard = ({ post, userInfo, handleLikePost, handleUpdatePost, handleDele
           </div>
           
           {/* Edit button (for the logged-in user to update their own post) */}
-          <button onClick={() => handleUpdatePost(post._id)}>
+          <button onClick={() => handleComment(post._id)}>
             <FaEdit />
           </button>
           

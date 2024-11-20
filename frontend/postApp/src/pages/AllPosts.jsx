@@ -54,7 +54,7 @@ const AllPosts = () => {
     }
   };
 
-  const handleUpdatePost = (postId) => {
+  const handleComment = (postId) => {
     // Implement the logic to update a post here
     console.log('Update post:', postId);
   };
@@ -94,7 +94,7 @@ const AllPosts = () => {
               post={post}
               userInfo={userInfo}
               handleLikePost={handleLikePost}
-              handleUpdatePost={handleUpdatePost}
+              handleUpdatePost={handleComment}
               handleDeletePost={handleDeletePost}
             />
           ))}

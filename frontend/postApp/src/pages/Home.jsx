@@ -78,9 +78,9 @@ const Home = () => {
     }
   };
 
-  const handleUpdatePost = (id) => {
-    console.log('Update post:', id);
-    // Add update functionality here
+  const handleComment = (id) => {
+    console.log('add comment on post:', id);
+    
   };
 
   const handleDeletePost = (id) => {
@@ -141,7 +141,7 @@ const Home = () => {
                 post={post}
                 userInfo={userInfo}
                 handleLikePost={handleLikePost}
-                handleUpdatePost={handleUpdatePost}
+                handleUpdatePost={handleComment}
                 handleDeletePost={handleDeletePost}
               />
             ))
