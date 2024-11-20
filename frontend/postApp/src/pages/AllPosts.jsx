@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { apiClient } from '../lib/api-client'; 
-import { GET_ALL_POST, LIKE_POST  } from '../utils/constants';
+import { GET_ALL_POST, LIKE_POST , ADD_COMMENT_POST } from '../utils/constants';
 import PostCard from '../components/PostCard'
 
 const AllPosts = () => {
@@ -54,9 +54,23 @@ const AllPosts = () => {
     }
   };
 
-  const handleComment = (postId) => {
-    // Implement the logic to update a post here
-    console.log('Update post:', postId);
+
+  const handleComment = async (postId, content) => {
+    try {
+      const response = await apiClient.post(ADD_COMMENT_POST, { postId, content }, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+  
+      setPosts((prevPosts) =>
+        prevPosts.map((post) =>
+          post._id === postId
+            ? { ...post, comments: [...post.comments, response.data.comment] }
+            : post
+        )
+      );
+    } catch (err) {
+      console.error('Error adding comment:', err.message);
+    }
   };
 
   const handleDeletePost = async (postId) => {
@@ -94,7 +108,7 @@ const AllPosts = () => {
               post={post}
               userInfo={userInfo}
               handleLikePost={handleLikePost}
-              handleUpdatePost={handleComment}
+              handleComment={handleComment}
               handleDeletePost={handleDeletePost}
             />
           ))}

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { MdAddCircle } from "react-icons/md";
 import { apiClient } from '../lib/api-client';
-import { CREATE_POST, USER_INFO, GET_USER_POST, LIKE_POST } from '../utils/constants';
+import { CREATE_POST, USER_INFO, GET_USER_POST, LIKE_POST, ADD_COMMENT_POST } from '../utils/constants';
 import { useAppStore } from '../store';
 import Sidebar from '../components/Sidebar';
 import PostCard from '../components/PostCard';
@@ -78,10 +78,24 @@ const Home = () => {
     }
   };
 
-  const handleComment = (id) => {
-    console.log('add comment on post:', id);
-    
+  const handleComment = async (postId, content) => {
+    try {
+      const response = await apiClient.post(ADD_COMMENT_POST, { postId, content }, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+  
+      setPosts((prevPosts) =>
+        prevPosts.map((post) =>
+          post._id === postId
+            ? { ...post, comments: [...post.comments, response.data.comment] }
+            : post
+        )
+      );
+    } catch (err) {
+      console.error('Error adding comment:', err.message);
+    }
   };
+  
 
   const handleDeletePost = (id) => {
     console.log('Delete post:', id);
@@ -141,7 +155,7 @@ const Home = () => {
                 post={post}
                 userInfo={userInfo}
                 handleLikePost={handleLikePost}
-                handleUpdatePost={handleComment}
+                handleComment={handleComment}
                 handleDeletePost={handleDeletePost}
               />
             ))

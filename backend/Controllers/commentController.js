@@ -13,7 +13,7 @@ module.exports.addComment = async (req, res) => {
             content,
             user: userId,
             post: postId
-        });
+        }).populate('user', 'fullname');
         await comment.save();
         post.comments.push(comment._id); 
         await post.save();
