@@ -14,6 +14,7 @@ const PostCard = ({ post, userInfo, handleLikePost, handleComment, handleDeleteP
       }
     };
   
+    
     return (
       <div className="flex flex-col justify-between bg-gray-600 rounded-sm p-4">
         <div className="text-gray-200 mt-2">{post.user.fullname}</div>
