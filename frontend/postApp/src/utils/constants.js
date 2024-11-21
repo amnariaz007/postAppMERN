@@ -15,6 +15,7 @@ export const GET_ALL_POST = `${POST_ROUTES}/getAllPosts`
 
 export const COMMENT_ROUTES = "api/comment"
 export const ADD_COMMENT_POST = `${COMMENT_ROUTES}/addComment`
+export const DELETE_COMMENT_POST = `${COMMENT_ROUTES}/deleteComment`
 
 
 

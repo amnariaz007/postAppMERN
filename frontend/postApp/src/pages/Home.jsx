@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { MdAddCircle } from "react-icons/md";
 import { apiClient } from '../lib/api-client';
-import { CREATE_POST, USER_INFO, GET_USER_POST, LIKE_POST, ADD_COMMENT_POST } from '../utils/constants';
+import { CREATE_POST, USER_INFO, GET_USER_POST, LIKE_POST, ADD_COMMENT_POST,DELETE_COMMENT_POST } from '../utils/constants';
 import { useAppStore } from '../store';
 import Sidebar from '../components/Sidebar';
 import PostCard from '../components/PostCard';
@@ -9,7 +9,6 @@ import PostCard from '../components/PostCard';
 const Home = () => {
   const { userInfo, setuserInfo } = useAppStore();
   const token = localStorage.getItem('token');
-
   const [isAddPostOpen, setIsAddPostOpen] = useState(false);
   const [postContent, setPostContent] = useState('');
   const [postImage, setPostImage] = useState(null);
@@ -36,14 +35,14 @@ const Home = () => {
 
         response = await apiClient.post(CREATE_POST, formData, {
           headers: {
-            'Authorization': `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
             'Content-Type': 'multipart/form-data',
           },
         });
       } else {
         response = await apiClient.post(CREATE_POST, postData, {
           headers: {
-            'Authorization': `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
             'Content-Type': 'application/json',
           },
         });
@@ -78,6 +77,7 @@ const Home = () => {
     }
   };
 
+ 
   const handleComment = async (postId, content) => {
     try {
       const response = await apiClient.post(ADD_COMMENT_POST, { postId, content }, {
@@ -95,12 +95,53 @@ const Home = () => {
       console.error('Error adding comment:', err.message);
     }
   };
+
+
+
+  const handleDeleteComment = async (postId, commentId) => {
+    // Optimistically update the UI
+    setPosts((prevPosts) =>
+      prevPosts.map((post) =>
+        post._id === postId
+          ? {
+              ...post,
+              comments: post.comments.filter(comment => comment._id !== commentId)
+            }
+          : post
+      )
+    );
+  
+    try {
+      const response = await apiClient.post(DELETE_COMMENT_POST, {
+        postId,
+        commentId
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      console.log('Comment deleted:', response.data);
+    } catch (error) {
+      console.error('Error deleting comment:', error);
+      // Revert the UI changes in case of failure
+      setPosts((prevPosts) =>
+        prevPosts.map((post) =>
+          post._id === postId
+            ? {
+                ...post,
+                comments: [...post.comments, { _id: commentId }] // Add back the comment if deletion fails
+              }
+            : post
+        )
+      );
+    }
+  };
+  
+  
+  
   
 
-  const handleDeletePost = (id) => {
-    console.log('Delete post:', id);
-    // Add delete functionality here
-  };
+
 
   useEffect(() => {
     const fetchUserInfo = async () => {
@@ -156,7 +197,8 @@ const Home = () => {
                 userInfo={userInfo}
                 handleLikePost={handleLikePost}
                 handleComment={handleComment}
-                handleDeletePost={handleDeletePost}
+                //handleDeletePost={handleDeletePost}
+                handleDeleteComment={handleDeleteComment}
               />
             ))
           ) : (
@@ -164,7 +206,6 @@ const Home = () => {
           )}
         </div>
 
-        {/* Add Post Form */}
         {isAddPostOpen && (
           <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
             <div className="bg-white p-6 rounded-lg w-1/3">

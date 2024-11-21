@@ -100,7 +100,10 @@ module.exports.getUserPosts = async (req, res) => {
         const objectId = new mongoose.Types.ObjectId(id) ;
 
         // Fetch posts using the correct `user` field
-        const posts = await postModel.find({ user: { $in: [id, objectId] } }).populate('user', 'fullname');;
+        const posts = await postModel.find({ user: { $in: [id, objectId] } }) .populate({
+                      path: 'comments',
+                      populate: { path: 'user', select: 'fullname' }, // Populate user details for each comment
+                    });
 
         console.log("Query result:", posts);
 
@@ -114,6 +117,9 @@ module.exports.getUserPosts = async (req, res) => {
         res.status(500).json({ message: "Internal server error" });
     }
 };
+
+
+  
 
 
 
