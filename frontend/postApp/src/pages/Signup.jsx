@@ -37,7 +37,7 @@ const Signup = () => {
           console.log({ response });
           if (response.status === 200) {
             setuserInfo(response.data.user)
-            navigate('/Login');
+            navigate('/');
           }
     
         }

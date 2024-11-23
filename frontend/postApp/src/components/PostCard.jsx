@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { MdOutlineFavorite, MdDelete } from "react-icons/md";
-import { FaEdit } from "react-icons/fa";
 import { CiHeart } from "react-icons/ci";
 const PostCard = ({ post, userInfo, handleLikePost, handleComment, handleDeletePost, handleDeleteComment }) => {
     const [commentContent, setCommentContent] = useState('');
@@ -28,9 +27,7 @@ const PostCard = ({ post, userInfo, handleLikePost, handleComment, handleDeleteP
             <button onClick={() => handleLikePost(post._id)}>
               {isLiked ? <MdOutlineFavorite style={{ color: 'white' }} /> : <CiHeart />}
             </button>
-            <button onClick={submitComment}>
-              <FaEdit />
-            </button>
+           
             <button onClick={() => handleDeletePost(post._id)}>
               <MdDelete />
             </button>
@@ -56,7 +53,9 @@ const PostCard = ({ post, userInfo, handleLikePost, handleComment, handleDeleteP
   
         <div className="mt-4 space-y-2">
           {post.comments && post.comments.length > 0 ? (
+            
             post.comments.map((comment) => (
+                
               <div key={comment._id} className="flex justify-between items-center text-sm text-gray-400">
                 <div>
                   <span className="font-semibold">
@@ -65,13 +64,18 @@ const PostCard = ({ post, userInfo, handleLikePost, handleComment, handleDeleteP
                   {comment.content}
                 </div>
                 {comment.user?._id === userInfo.id && (
+                    
                   <button
                     onClick={() => handleDeleteComment(post._id, comment._id)}
-                    className="ml-2 text-red-500 hover:text-red-700"
+                    className="ml-2 white hover:white"
                   >
                     <MdDelete />
                   </button>
                 )}
+
+
+
+
               </div>
             ))
           ) : (

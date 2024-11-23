@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { apiClient } from '../lib/api-client'; 
-import { GET_ALL_POST, LIKE_POST , ADD_COMMENT_POST } from '../utils/constants';
+import { GET_ALL_POST, LIKE_POST , ADD_COMMENT_POST,DELETE_COMMENT_POST,USER_INFO } from '../utils/constants';
 import PostCard from '../components/PostCard'
+import { useNavigate } from 'react-router-dom';
 
 const AllPosts = () => {
+  const navigate = useNavigate()
   const [posts, setPosts] = useState([]);
   const token = localStorage.getItem('token');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [userInfo, setUserInfo] = useState({}); // Assuming you have a way to set this (maybe from context or local storage)
+  const [userInfo, setuserInfo] = useState({}); // Assuming you have a way to set this (maybe from context or local storage)
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -31,6 +33,21 @@ const AllPosts = () => {
 
     fetchPosts();
   }, []);
+
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const response = await apiClient.get(USER_INFO, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setuserInfo(response.data);
+      } catch (err) {
+        console.error('Error fetching user info:', err);
+      }
+    };
+
+    if (!userInfo && token) fetchUserInfo();
+  }, [userInfo, token, setuserInfo]);
 
 
 
@@ -73,6 +90,46 @@ const AllPosts = () => {
     }
   };
 
+  const handleDeleteComment = async (postId, commentId) => {
+    // Optimistically update the UI
+    setPosts((prevPosts) =>
+      prevPosts.map((post) =>
+        post._id === postId
+          ? {
+              ...post,
+              comments: post.comments.filter(comment => comment._id !== commentId)
+            }
+          : post
+      )
+    );
+  
+    try {
+      const response = await apiClient.post(DELETE_COMMENT_POST, {
+        postId,
+        commentId
+      }, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      console.log('Comment deleted:', response.data);
+    } catch (error) {
+      console.error('Error deleting comment:', error);
+      // Revert the UI changes in case of failure
+      setPosts((prevPosts) =>
+        prevPosts.map((post) =>
+          post._id === postId
+            ? {
+                ...post,
+                comments: [...post.comments, { _id: commentId }] // Add back the comment if deletion fails
+              }
+            : post
+        )
+      );
+    }
+  };
+  
+
   const handleDeletePost = async (postId) => {
     try {
       const token = localStorage.getItem('token');
@@ -100,6 +157,14 @@ const AllPosts = () => {
   return (
     <div className="p-4">
       <h1 className="text-xl font-bold mb-4">All Posts</h1>
+      <div className="my-2">
+        <button
+          onClick={() => navigate('/')}
+          className="bg-blue-400 rounded p-4"
+        >
+          Go back to home
+        </button>
+      </div>
       {posts.length > 0 ? (
         <div className="grid grid-cols-3 gap-4">
           {posts.map((post) => (
@@ -109,6 +174,7 @@ const AllPosts = () => {
               userInfo={userInfo}
               handleLikePost={handleLikePost}
               handleComment={handleComment}
+              handleDeleteComment={handleDeleteComment}
               handleDeletePost={handleDeletePost}
             />
           ))}
@@ -116,6 +182,7 @@ const AllPosts = () => {
       ) : (
         <p>No posts available.</p>
       )}
+      
     </div>
   );
 };

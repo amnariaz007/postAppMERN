@@ -4,32 +4,30 @@ const postModel = require('../models/postModel');
 module.exports.addComment = async (req, res) => {
     try {
       const { postId, content } = req.body;
-      const userId = req.user._id; // Assuming `req.user` is populated from middleware
+      const userId = req.user._id;
   
-      // Check if the post exists
+    
       const post = await postModel.findById(postId);
       if (!post) {
         return res.status(404).json({ message: 'Post not found' });
       }
   
-      // Create a new comment
       const comment = new commentModel({
         content,
         user: userId,
         post: postId,
       });
   
-      // Save the comment to the database
       const savedComment = await comment.save();
   
-      // Add the comment to the post's comments array
+    
       post.comments.push(savedComment._id);
       await post.save();
   
-      // Populate user field in the saved comment (optional)
+  
       const populatedComment = await commentModel
         .findById(savedComment._id)
-        .populate('user', 'fullname'); // Replace 'fullname' with the actual field you want
+        .populate('user', 'fullname'); 
   
       res.status(201).json({ message: 'Comment added successfully', comment: populatedComment });
     } catch (err) {
@@ -38,6 +36,7 @@ module.exports.addComment = async (req, res) => {
     }
   };
   
+
 
   module.exports.deleteComment = async (req, res) => {
     const { postId, commentId } = req.body;

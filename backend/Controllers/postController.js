@@ -90,20 +90,18 @@ module.exports.deletePost = async(req,res) =>{
 
 module.exports.getUserPosts = async (req, res) => {
     try {
-        let { id } = req.params; // Extract user ID from URL params
+        let { id } = req.params; 
         console.log("User ID from params:", id);
-
-        // Remove colon if present in the `id`
         id = id.startsWith(":") ? id.slice(1) : id;
-
-        // Validate and convert `id` to ObjectId if possible
         const objectId = new mongoose.Types.ObjectId(id) ;
-
-        // Fetch posts using the correct `user` field
-        const posts = await postModel.find({ user: { $in: [id, objectId] } }) .populate({
-                      path: 'comments',
-                      populate: { path: 'user', select: 'fullname' }, // Populate user details for each comment
-                    });
+        const posts = await postModel.find({ user: { $in: [id, objectId] } }) .populate("user", "fullname email") // Populate user with selected fields
+        .populate({
+            path: 'comments',
+            populate: {
+                path: 'user', // Populate user details within each comment
+                select: 'fullname email' // Select specific fields from user
+            }
+        })
 
         console.log("Query result:", posts);
 
@@ -128,14 +126,14 @@ module.exports.getUserPosts = async (req, res) => {
 
 module.exports.getAllPosts = async (req, res) => {
     try {
-        // Find all posts and populate user and comments fields if needed
+        
         const posts = await postModel.find()
-            .populate("user", "fullname email") // Populate user with selected fields
+            .populate("user", "fullname email") 
             .populate({
                 path: 'comments',
                 populate: {
-                    path: 'user', // Populate user details within each comment
-                    select: 'fullname email' // Select specific fields from user
+                    path: 'user', 
+                    select: 'fullname email' 
                 }
             })
             .sort({ createdAt: -1 }); 
