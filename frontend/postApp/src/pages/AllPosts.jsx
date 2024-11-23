@@ -3,6 +3,7 @@ import { apiClient } from '../lib/api-client';
 import { GET_ALL_POST, LIKE_POST , ADD_COMMENT_POST,DELETE_COMMENT_POST,USER_INFO } from '../utils/constants';
 import PostCard from '../components/PostCard'
 import { useNavigate } from 'react-router-dom';
+import Sidebar from '../components/Sidebar';
 
 const AllPosts = () => {
   const navigate = useNavigate()
@@ -155,8 +156,11 @@ const AllPosts = () => {
   }
 
   return (
+    <div className="flex min-h-screen">
+      <Sidebar />
     <div className="p-4">
       <h1 className="text-xl font-bold mb-4">All Posts</h1>
+      
       <div className="my-2">
         <button
           onClick={() => navigate('/')}
@@ -183,6 +187,7 @@ const AllPosts = () => {
         <p>No posts available.</p>
       )}
       
+    </div>
     </div>
   );
 };
