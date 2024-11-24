@@ -29,19 +29,17 @@ const Login = () => {
   const HandleLogin = async () => {
     if (validatelogin()) {
       const response = await apiClient.post(LOGIN_ROUTE, { email, password });
-      console.log("Full response:", response); // Check the full response
-  
-      // Check if the response includes `id` and `token`
+      console.log("Full response:", response); 
+      
       if (response.data && response.data.id && response.data.token) {
-        // Store the token in localStorage
+        
         localStorage.setItem('token', response.data.token);
   
-        // Set the entire response.data as userInfo
         setuserInfo(response.data);
         setTimeout(() => {
           console.log("Updated userInfo after login:", useAppStore.getState().userInfo);
           navigate('/');
-        }, 100); // Optional delay
+        }, 100); 
       } else {
         console.error("Login failed or unexpected response structure:", response.data);
       }
@@ -83,7 +81,8 @@ const Login = () => {
           />
           <div className='w-full flex items-center justify-between'>
             <button onClick={HandleLogin} className='bg-slate-500 rounded p-2 '> Login </button>
-            <Link to="/Signup" > Don't have an account, Signup here!</Link>
+            <Link to="/Signup" > Signup here!</Link>
+            <Link to="/forgetpassword" > forgot password </Link>
           </div>
 
         </div>
