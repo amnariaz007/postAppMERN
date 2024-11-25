@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { apiClient } from '../lib/api-client'
 import { useAppStore } from '../store';
-import { LOGIN_ROUTE } from '../utils/constants'
+import { RECOVER_PASSWORD } from '../utils/constants'
+import { toast } from "sonner";
+
 
 
 const Login = () => {
@@ -10,26 +12,24 @@ const Login = () => {
 
     const { userInfo, setuserInfo } = useAppStore();
     const [email, setemail] = useState("")
-    const [newpassword, setnewpassword] = useState("")
-    const [confirmnewpassword, setconfirmnewpassword] = useState("")
+    const [newPassword, setnewPassword] = useState("")
+    const [confirmPassword, setconfirmPassword] = useState("")
 
 
-
-
-    const validatelogin = (email, newpassword, confirmpassword) => {
+    const validatelogin = () => {
         if (!email.length) {
             toast.error("Email is required");
             return false;
         }
-        if (!newpassword.length) {
+        if (!newPassword.length) {
             toast.error("Password is required");
             return false;
         }
-        if (!confirmpassword.length) {
+        if (!confirmPassword.length) {
             toast.error("Confirm password is required");
             return false;
         }
-        if (newpassword !== confirmpassword) {
+        if (newPassword !== confirmPassword) {
             toast.error("New Password and Confirm Password do not match");
             return false;
         }
@@ -39,24 +39,24 @@ const Login = () => {
     
 
     const HandleLogin = async () => {
-        if (validatelogin()) {
-            const response = await apiClient.post(LOGIN_ROUTE, { email, password });
-            console.log("Full response:", response);
-
-            if (response.data && response.data.id && response.data.token) {
-
-                localStorage.setItem('token', response.data.token);
-
-                setuserInfo(response.data);
-                setTimeout(() => {
-                    console.log("Updated userInfo after login:", useAppStore.getState().userInfo);
-                    navigate('/');
-                }, 100);
-            } else {
-                console.error("Login failed or unexpected response structure:", response.data);
+        if (validatelogin(email, newPassword, confirmPassword)) {
+            try {
+                const response = await apiClient.post(RECOVER_PASSWORD, { email, newPassword, confirmPassword });
+                console.log("Full response:", response);
+    
+                if (response.data && response.data.message === 'Password reset successfully.') {
+                    toast.success("Password reset successfully. Please log in with your new password.");
+                    navigate('/login'); // Redirect to login page or any relevant page
+                } else {
+                    toast.error("Unexpected response from the server.");
+                }
+            } catch (error) {
+                console.error("Error during API call:", error.response ? error.response.data : error.message);
+                toast.error(error.response?.data?.message || "An error occurred. Please try again.");
             }
         }
     };
+    
 
 
 
@@ -84,15 +84,15 @@ const Login = () => {
 
                         placeholder='New Password'
                         name='password'
-                        value={newpassword}
-                        onChange={(e) => setnewpassword(e.target.value)}
+                        value={newPassword}
+                        onChange={(e) => setnewPassword(e.target.value)}
                         className='px-3 py-2 rounded w-full my-3 bg-gray-700'
                     />
                     <input
                         placeholder='Confirm Password'
                         name='password'
-                        value={confirmnewpassword}
-                        onChange={(e) => setconfirmnewpassword(e.target.value)}
+                        value={confirmPassword}
+                        onChange={(e) => setconfirmPassword(e.target.value)}
                         className='px-3 py-2 rounded w-full my-1 bg-gray-700'
                     />
                     <div className='w-full flex items-center justify-between'>

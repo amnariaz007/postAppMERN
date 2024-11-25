@@ -5,6 +5,9 @@ export const SINGUP_ROUTE = `${AUTH_ROUTES}/register`
 export const LOGIN_ROUTE = `${AUTH_ROUTES}/login`
 export const USER_INFO = `${AUTH_ROUTES}/userInfo`
 export const LOGOUT = `${AUTH_ROUTES}/logout`
+export const RECOVER_PASSWORD = `${AUTH_ROUTES}/recoverPassword`
+
+
 
 export const POST_ROUTES = "api/post"
 export const CREATE_POST = `${POST_ROUTES}/createPost`
