@@ -6,7 +6,6 @@ import { RECOVER_PASSWORD } from '../utils/constants'
 import { toast } from "sonner";
 
 
-
 const Login = () => {
     const navigate = useNavigate();
 
