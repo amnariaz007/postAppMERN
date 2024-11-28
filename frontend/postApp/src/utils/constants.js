@@ -6,6 +6,9 @@ export const LOGIN_ROUTE = `${AUTH_ROUTES}/login`
 export const USER_INFO = `${AUTH_ROUTES}/userInfo`
 export const LOGOUT = `${AUTH_ROUTES}/logout`
 export const RECOVER_PASSWORD = `${AUTH_ROUTES}/recoverPassword`
+export const GOOGLE_LOGIN = `${AUTH_ROUTES}/googlelogin`
+
+
 
 
 

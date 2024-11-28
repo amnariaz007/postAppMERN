@@ -2,9 +2,10 @@
 const userModel = require('../models/userModel');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const { OAuth2Client } = require('google-auth-library');
 const { tokenGenerator } = require("../utils/tokenGenerator");
 
-
+const client = new OAuth2Client('215959850029-qgugg2bb27t50eohcaaj6jkssi0r1qt9.apps.googleusercontent.com');
 
 module.exports.registerUser =  async (req,res )=> {
     try {
@@ -94,7 +95,7 @@ module.exports.recoverPassword = async (req, res) => {
   const { email, newPassword, confirmPassword } = req.body;
 
   try {
-    // Input validation
+   
     if (!email) {
       return res.status(400).json({ message: 'Email is required.' });
     }
@@ -105,7 +106,7 @@ module.exports.recoverPassword = async (req, res) => {
       return res.status(400).json({ message: 'Passwords do not match.' });
     }
 
-    // Find user by email
+  
     const user = await userModel.findOne({ email });
     if (!user) {
       return res.status(404).json({ message: 'User not found.' });
@@ -125,6 +126,37 @@ module.exports.recoverPassword = async (req, res) => {
     res.status(500).json({ message: 'An error occurred. Please try again later.' });
   }
 };
+
+module.exports.googlelogin = async ( req,res) =>{
+  const { token } = req.body;
+
+  try {
+    const ticket = await client.verifyIdToken({
+      idToken: token,
+      audience: '215959850029-qgugg2bb27t50eohcaaj6jkssi0r1qt9.apps.googleusercontent.com',
+    });
+
+    const payload = ticket.getPayload();
+    const { email, fullname} = payload;
+
+    let user = await userModel.findOne({ email });
+
+    if (!user) {
+      user = new userModel({ email,fullname });
+      await user.save();
+    }
+
+    let token = tokenGenerator(user);
+                res.cookie("token", token);
+
+    res.json({ token: jwtToken, user });
+  } catch (err) {
+    console.error('Error verifying Google token:', err);
+    res.status(401).json({ message: 'Invalid Google token' });
+  }
+}
+
+
 
 
 module.exports.logout = function (req, res) {

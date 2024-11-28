@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const {registerUser, loginUser, logout, userInfo, recoverPassword} = require('../Controllers/authController');
+const {registerUser, loginUser, logout, userInfo, recoverPassword, googlelogin} = require('../Controllers/authController');
 const isLoggedin = require('../Middlewares/isLoggedin')
 const authRoutes = router 
 
@@ -15,6 +15,8 @@ authRoutes.post('/login', loginUser )
 authRoutes.post('/recoverPassword', recoverPassword )
 
 authRoutes.get("/userInfo", isLoggedin ,userInfo);
+
+authRoutes.post('/googlelogin' , googlelogin )
 
 authRoutes.get("/logout", logout);
 
