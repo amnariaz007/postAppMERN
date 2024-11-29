@@ -127,34 +127,47 @@ module.exports.recoverPassword = async (req, res) => {
   }
 };
 
-module.exports.googlelogin = async ( req,res) =>{
+// // Token generator function
+// const tokenGenerator = (user) => {
+//   return jwt.sign(
+//     { id: user._id, email: user.email },
+//     'YOUR_SECRET_KEY', // Replace with your JWT secret key
+//     { expiresIn: '1h' }
+//   );
+// };
+
+module.exports.googlelogin = async (req, res) => {
   const { token } = req.body;
 
   try {
+    // Verify the Google token
     const ticket = await client.verifyIdToken({
       idToken: token,
       audience: '215959850029-qgugg2bb27t50eohcaaj6jkssi0r1qt9.apps.googleusercontent.com',
     });
 
+    // Extract payload from the ticket
     const payload = ticket.getPayload();
-    const { email, fullname} = payload;
+    const { email, name } = payload; // Use "name" instead of "fullname" since that's how Google provides it
 
+    // Check if the user exists in the database
     let user = await userModel.findOne({ email });
-
     if (!user) {
-      user = new userModel({ email,fullname });
+      // Create a new user if one doesn't exist
+      user = new userModel({ email, fullname: name });
       await user.save();
     }
 
-    let token = tokenGenerator(user);
-                res.cookie("token", token);
+    // Generate a JWT token for the user
+    const jwtToken = tokenGenerator(user);
 
-    res.json({ token: jwtToken, user });
+    // Respond with the JWT token and user data
+    res.status(200).json({ token: jwtToken, user });
   } catch (err) {
-    console.error('Error verifying Google token:', err);
+    console.error('Error verifying Google token:', err.message);
     res.status(401).json({ message: 'Invalid Google token' });
   }
-}
+};
 
 
 
