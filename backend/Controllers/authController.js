@@ -127,47 +127,42 @@ module.exports.recoverPassword = async (req, res) => {
   }
 };
 
-// // Token generator function
-// const tokenGenerator = (user) => {
-//   return jwt.sign(
-//     { id: user._id, email: user.email },
-//     'YOUR_SECRET_KEY', // Replace with your JWT secret key
-//     { expiresIn: '1h' }
-//   );
-// };
+
 
 module.exports.googlelogin = async (req, res) => {
   const { token } = req.body;
 
+  if (!token) {
+    return res.status(400).json({ message: 'Token is missing' });
+  }
+
+  console.log('Received token:', token); // Debugging: Ensure this is the correct token
+
   try {
-    // Verify the Google token
     const ticket = await client.verifyIdToken({
       idToken: token,
-      audience: '215959850029-qgugg2bb27t50eohcaaj6jkssi0r1qt9.apps.googleusercontent.com',
+      audience: 'YOUR_GOOGLE_CLIENT_ID',  // Ensure this matches your client ID
     });
 
-    // Extract payload from the ticket
     const payload = ticket.getPayload();
-    const { email, name } = payload; // Use "name" instead of "fullname" since that's how Google provides it
+    const { email, name } = payload;
 
-    // Check if the user exists in the database
     let user = await userModel.findOne({ email });
     if (!user) {
-      // Create a new user if one doesn't exist
+      // If user doesn't exist, create a new one
       user = new userModel({ email, fullname: name });
       await user.save();
     }
 
-    // Generate a JWT token for the user
-    const jwtToken = tokenGenerator(user);
+    const jwtToken = tokenGenerator(user);  // Assuming you have a function to generate JWT
 
-    // Respond with the JWT token and user data
-    res.status(200).json({ token: jwtToken, user });
+    res.status(200).json({ token: jwtToken, user });  // Return the JWT and user info
   } catch (err) {
     console.error('Error verifying Google token:', err.message);
     res.status(401).json({ message: 'Invalid Google token' });
   }
 };
+
 
 
 
