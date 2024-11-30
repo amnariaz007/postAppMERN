@@ -127,8 +127,6 @@ module.exports.recoverPassword = async (req, res) => {
   }
 };
 
-
-
 module.exports.googlelogin = async (req, res) => {
   const { token } = req.body;
 
