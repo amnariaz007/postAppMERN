@@ -139,7 +139,8 @@ module.exports.googlelogin = async (req, res) => {
   try {
     const ticket = await client.verifyIdToken({
       idToken: token,
-      audience: 'YOUR_GOOGLE_CLIENT_ID',  // Ensure this matches your client ID
+      audience: '215959850029-qgugg2bb27t50eohcaaj6jkssi0r1qt9.apps.googleusercontent.com'
+      ,  
     });
 
     const payload = ticket.getPayload();

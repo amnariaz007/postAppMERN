@@ -62,8 +62,10 @@ const Login = () => {
       if (response.data && response.data.token) {
         localStorage.setItem('token', response.data.token);
         setuserInfo(response.data.user);
+        console.log('Navigating to home...');
         navigate('/');
       }
+      
     } catch (err) {
       console.error('Google login failed:', err);
       toast.error('Google login failed');
