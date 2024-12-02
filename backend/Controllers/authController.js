@@ -134,7 +134,7 @@ module.exports.googlelogin = async (req, res) => {
     return res.status(400).json({ message: 'Token is missing' });
   }
 
-  console.log('Received token:', token); // Debugging: Ensure this is the correct token
+  console.log('Received token:', token); 
 
   try {
     const ticket = await client.verifyIdToken({
@@ -148,14 +148,14 @@ module.exports.googlelogin = async (req, res) => {
 
     let user = await userModel.findOne({ email });
     if (!user) {
-      // If user doesn't exist, create a new one
+      
       user = new userModel({ email, fullname: name });
       await user.save();
     }
 
-    const jwtToken = tokenGenerator(user);  // Assuming you have a function to generate JWT
+    const jwtToken = tokenGenerator(user); 
 
-    res.status(200).json({ token: jwtToken, user });  // Return the JWT and user info
+    res.status(200).json({ token: jwtToken, user });  
   } catch (err) {
     console.error('Error verifying Google token:', err.message);
     res.status(401).json({ message: 'Invalid Google token' });
