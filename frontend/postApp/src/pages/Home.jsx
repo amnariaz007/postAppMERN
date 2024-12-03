@@ -187,6 +187,7 @@ const Home = () => {
           <MdAddCircle className="text-5xl" />
         </div>
 
+
         {/* Display Posts */}
         <div className="grid grid-cols-3 gap-4">
           {posts.length > 0 ? (
