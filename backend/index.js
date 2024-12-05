@@ -10,8 +10,6 @@ const authRoutes = require('./Routes/authRoutes');
 const postRoutes = require('./Routes/postRoutes');
 const commentRoutes = require('./Routes/commentRoutes');
 
-
-
 // Ensure that the uploads directories exist
 const directories = [
   "uploads/posts",
