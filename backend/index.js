@@ -15,6 +15,7 @@ const directories = [
   "uploads/posts",
 ];
 
+
 directories.forEach(dir => {
   const dirPath = path.join(__dirname, dir);
   if (!fs.existsSync(dirPath)) {
