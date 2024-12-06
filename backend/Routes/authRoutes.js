@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const {registerUser, loginUser, logout, userInfo, recoverPassword, googlelogin} = require('../Controllers/authController');
-const isLoggedin = require('../Middlewares/isLoggedin')
+const isLoggedin = require('../Middlewares/isLoggedIn')
 const authRoutes = router 
 
 
