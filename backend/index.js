@@ -23,6 +23,33 @@ directories.forEach(dir => {
   }
 });
 
+
+const _dirname = path.dirname("");
+const buildPath = path.join(__dirname, '../frontend/postApp/dist');
+
+console.log(buildPath);
+
+
+app.use(express.static(buildPath));
+
+app.get("/", function(req,res){
+  res.sendFile(
+    path.join(__dirname, "../frontend/postApp/dist/index.html"),
+    function(err){
+      if(err){
+        res.status(500).send(err);
+      }
+    }
+  )
+})
+
+
+
+
+
+
+
+
 // Middlewares
 app.use(cors({
   origin: [process.env.ORIGIN],
