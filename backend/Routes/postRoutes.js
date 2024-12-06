@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const {createPost, likePost, deletePost,getUserPosts, getAllPosts} = require('../Controllers/postController');
-const isLoggedin = require('../Middlewares/isLoggedin');
+const isLoggedin = require('../Middlewares/isLoggedIn');
 const postRoutes = router 
 const upload = require ('../config/multer-config')
 

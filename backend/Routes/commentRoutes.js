@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const {addComment, deleteComment} = require('../Controllers/commentController');
-const isLoggedin = require('../Middlewares/isLoggedin');
+const isLoggedin = require('../Middlewares/isLoggedIn');
 const commentRoutes = router 
 
 
