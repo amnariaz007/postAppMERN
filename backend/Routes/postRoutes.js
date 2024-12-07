@@ -12,6 +12,4 @@ postRoutes.get('/getUserPosts/:id',isLoggedin , getUserPosts )
 postRoutes.get('/getAllPosts',isLoggedin , getAllPosts )
 
 
-
-
 module.exports = postRoutes;
