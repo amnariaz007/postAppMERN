@@ -24,24 +24,12 @@ directories.forEach(dir => {
 });
 
 
-const __dirname = path.dirname("");
-const buildPath = path.join(__dirname, '../frontend/postApp/dist');
+app.use(express.static(path.join(__dirname, 'frontend/postApp/dist')));
 
-console.log(buildPath);
-
-
-app.use(express.static(buildPath));
-
-app.get("/", function(req,res){
-  res.sendFile(
-    path.join(__dirname, "../frontend/postApp/dist/index.html"),
-    function(err){
-      if(err){
-        res.status(500).send(err);
-      }
-    }
-  )
-})
+// Catch-all route to serve index.html for frontend routing
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'frontend/postApp/dist/index.html'));
+});
 
 
 // Middlewares
