@@ -24,7 +24,7 @@ directories.forEach(dir => {
 });
 
 
-const _dirname = path.dirname("");
+const __dirname = path.dirname("");
 const buildPath = path.join(__dirname, '../frontend/postApp/dist');
 
 console.log(buildPath);
