@@ -81,3 +81,4 @@ await mongoose.connect(`${process.env.MOONGODB_URI}/postApp`)
   
     
 }
+connectDB()
