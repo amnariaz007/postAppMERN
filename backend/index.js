@@ -56,7 +56,7 @@ app.use("/uploads/posts", express.static("uploads/posts"));
 app.use(express.json());
 app.use(cookieparser());
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3001;
 const db = process.env.MOONGODB_URI;
 
 // API Routes

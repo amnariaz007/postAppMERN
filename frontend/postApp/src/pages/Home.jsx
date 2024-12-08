@@ -178,7 +178,7 @@ const Home = () => {
     <div className="flex min-h-screen">
       <Sidebar />
       <div className="flex-grow p-4 space-y-4">
-        {/* Add Post Card */}
+        {/* Add Post Card */} 
         <div
           onClick={handleAddPostToggle}
           className="flex flex-col justify-center items-center bg-gray-600 rounded-sm p-4 cursor-pointer"
