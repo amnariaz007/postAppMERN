@@ -44,12 +44,6 @@ app.get("/", function(req,res){
 })
 
 
-
-
-
-
-
-
 // Middlewares
 app.use(cors({
   origin: [process.env.ORIGIN],
@@ -76,6 +70,14 @@ const server = app.listen(port, () => {
 });
 
 
-mongoose.connect(db)
-  .then(() => console.log("DB connected"))
-  .catch(err => console.log(err));
+
+const connectDB = async () => {
+
+  mongoose.connection.on("connected", ()=>{
+      console.log("DB Connected");
+  })
+
+await mongoose.connect(`${process.env.MOONGODB_URI}/postApp`)
+  
+    
+}
