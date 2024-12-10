@@ -24,7 +24,6 @@ directories.forEach(dir => {
 });
 
 
-
 app.use(express.static(path.join(__dirname, 'frontend/postApp/dist')));
 
 // Catch-all route to serve index.html for frontend routing
