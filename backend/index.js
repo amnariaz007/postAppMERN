@@ -23,8 +23,6 @@ directories.forEach(dir => {
   }
 });
 
-
-
 // Static Middleware
 app.use(express.static(path.join(__dirname, '../frontend/postApp/dist')));
 app.get('*', (req, res) => {
