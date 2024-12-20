@@ -31,6 +31,7 @@ app.get('*', (req, res) => {
 
 
 
+
 // Middlewares
 app.use(cors({
   origin: [process.env.ORIGIN],
