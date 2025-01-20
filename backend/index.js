@@ -23,11 +23,11 @@ directories.forEach(dir => {
   }
 });
 
-// Static Middleware
-app.use(express.static(path.join(__dirname, '../frontend/postApp/dist')));
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../frontend/postApp/dist/index.html'));
-});
+// // Static Middleware
+// app.use(express.static(path.join(__dirname, '../frontend/postApp/dist')));
+// app.get('*', (req, res) => {
+//   res.sendFile(path.join(__dirname, '../frontend/postApp/dist/index.html'));
+// });
 
 
 

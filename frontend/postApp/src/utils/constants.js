@@ -8,10 +8,6 @@ export const LOGOUT = `${AUTH_ROUTES}/logout`
 export const RECOVER_PASSWORD = `${AUTH_ROUTES}/recoverPassword`
 export const GOOGLE_LOGIN = `${AUTH_ROUTES}/googlelogin`
 
-
-
-
-
 export const POST_ROUTES = "api/post"
 export const CREATE_POST = `${POST_ROUTES}/createPost`
 export const LIKE_POST = `${POST_ROUTES}/likePost`
